@@ -11,35 +11,11 @@
  */
 
 var ChatAppDispatcher = require('../dispatcher/ChatAppDispatcher');
-var ChatConstants = require('../constants/ChatConstants');
-var EventEmitter = require('events').EventEmitter;
 var MessageStore = require('../stores/MessageStore');
 var ThreadStore = require('../stores/ThreadStore');
-var assign = require('object-assign');
 var Rx = require('rx-lite');
 
-var ActionTypes = ChatConstants.ActionTypes;
-var CHANGE_EVENT = 'change';
-
-var UnreadThreadStore = assign({}, EventEmitter.prototype, {
-
-  emitChange: function(data) {
-    this.emit(CHANGE_EVENT, data);
-  },
-
-  /**
-   * @param {function} callback
-   */
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  /**
-   * @param {function} callback
-   */
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
-  },
+var UnreadThreadStore = {
 
   getCount: function() {
     var threads = ThreadStore.getAll();
@@ -59,7 +35,7 @@ var UnreadThreadStore = assign({}, EventEmitter.prototype, {
         ).subscribe(callback);
   },
 
-});
+};
 
 var clickThreadStream = ChatAppDispatcher.clickThread.map(function (action) {
   return {
