@@ -16,6 +16,7 @@ var EventEmitter = require('events').EventEmitter;
 var MessageStore = require('../stores/MessageStore');
 var ThreadStore = require('../stores/ThreadStore');
 var assign = require('object-assign');
+var Rx = require('rx-lite');
 
 var ActionTypes = ChatConstants.ActionTypes;
 var CHANGE_EVENT = 'change';
@@ -49,25 +50,32 @@ var UnreadThreadStore = assign({}, EventEmitter.prototype, {
       }
     }
     return unreadCount;
-  }
+  },
+
+  subscribe: function (callback) {
+    return Rx.Observable.merge(
+          clickThreadStream,
+          recieveMessageStream
+        ).subscribe(callback);
+  },
 
 });
 
-ChatAppDispatcher.clickThread.subscribe(function (action) {
-  UnreadThreadStore.emitChange({
+var clickThreadStream = ChatAppDispatcher.clickThread.map(function (action) {
+  return {
     unreadCount: UnreadThreadStore.getCount()
-  });
+  };
 });
 
-ChatAppDispatcher.receiveRawMessages.subscribe(function (action) {
+var recieveMessageStream = ChatAppDispatcher.receiveRawMessages.map(function (action) {
   //ChatAppDispatcher.waitFor([
   //  ThreadStore.dispatchToken,
   //  MessageStore.dispatchToken
   //]);
 
-  UnreadThreadStore.emitChange({
+  return {
     unreadCount: UnreadThreadStore.getCount()
-  });
+  };
 });
 
 module.exports = UnreadThreadStore;
