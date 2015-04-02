@@ -99,7 +99,15 @@ var ThreadStore = assign({}, EventEmitter.prototype, {
 
   getCurrent: function() {
     return this.get(this.getCurrentID());
-  }
+  },
+
+  getClickThreadStream: function () {
+    return clickThreadStream;
+  },
+
+  getRecieveMessageStream: function () {
+    return recieveMessageStream;
+  },
 
 });
 

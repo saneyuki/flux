@@ -90,7 +90,11 @@ var MessageStore = assign({}, EventEmitter.prototype, {
 
   getAllForCurrentThread: function() {
     return this.getAllForThread(ThreadStore.getCurrentID());
-  }
+  },
+
+  getRecieveMessageStream: function () {
+    return recieveMessageStream;
+  },
 
 });
 
@@ -103,14 +107,22 @@ var createMessageStream = ChatAppDispatcher.createMessage.map(function(action){
   return action;
 });
 
-var clickThreadStream = ChatAppDispatcher.clickThread.map(function (action) {
-  //ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);
+var clickThreadStream = Rx.Observable.zipArray(
+    ChatAppDispatcher.clickThread,
+    ThreadStore.getClickThreadStream()
+).map(function () {
   _markAllInThreadRead(ThreadStore.getCurrentID());
+  return;
 });
 
 var recieveMessageStream = ChatAppDispatcher.receiveRawMessages.map(function (action) {
   _addMessages(action.rawMessages);
-  //ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);
+  return action;
+})
+.flatMap(function(action) {
+  return ThreadStore.getRecieveMessageStream();
+})
+.map(function(){
   _markAllInThreadRead(ThreadStore.getCurrentID());
 });
 

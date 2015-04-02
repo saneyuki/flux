@@ -43,12 +43,11 @@ var clickThreadStream = ChatAppDispatcher.clickThread.map(function (action) {
   };
 });
 
-var recieveMessageStream = ChatAppDispatcher.receiveRawMessages.map(function (action) {
-  //ChatAppDispatcher.waitFor([
-  //  ThreadStore.dispatchToken,
-  //  MessageStore.dispatchToken
-  //]);
-
+var recieveMessageStream = Rx.Observable.zipArray(
+  ThreadStore.getRecieveMessageStream(),
+  MessageStore.getRecieveMessageStream(),
+  ChatAppDispatcher.receiveRawMessages
+).map(function (action) {
   return {
     unreadCount: UnreadThreadStore.getCount()
   };
