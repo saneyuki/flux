@@ -74,8 +74,8 @@ var MessageSection = React.createClass({
   /**
    * Event handler for 'change' events coming from the MessageStore
    */
-  _onChange: function() {
-    this.setState(getStateFromStores());
+  _onChange: function(data) {
+    this.setState(data);
   }
 
 });

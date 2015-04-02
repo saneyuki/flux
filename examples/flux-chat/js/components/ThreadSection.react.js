@@ -69,8 +69,8 @@ var ThreadSection = React.createClass({
   /**
    * Event handler for 'change' events coming from the stores
    */
-  _onChange: function() {
-    this.setState(getStateFromStores());
+  _onChange: function(data) {
+    this.setState(data);
   }
 
 });

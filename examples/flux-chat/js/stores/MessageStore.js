@@ -43,8 +43,8 @@ function _markAllInThreadRead(threadID) {
 
 var MessageStore = assign({}, EventEmitter.prototype, {
 
-  emitChange: function() {
-    this.emit(CHANGE_EVENT);
+  emitChange: function(data) {
+    this.emit(CHANGE_EVENT, data);
   },
 
   /**
@@ -100,7 +100,9 @@ MessageStore.dispatchToken = ChatAppDispatcher.register(function(action) {
     case ActionTypes.CLICK_THREAD:
       ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);
       _markAllInThreadRead(ThreadStore.getCurrentID());
-      MessageStore.emitChange();
+      MessageStore.emitChange({
+        messages: MessageStore.getAllForCurrentThread(),
+      });
       break;
 
     case ActionTypes.CREATE_MESSAGE:
@@ -109,14 +111,18 @@ MessageStore.dispatchToken = ChatAppDispatcher.register(function(action) {
         action.currentThreadID
       );
       _messages[message.id] = message;
-      MessageStore.emitChange();
+      MessageStore.emitChange({
+        messages: MessageStore.getAllForCurrentThread(),
+      });
       break;
 
     case ActionTypes.RECEIVE_RAW_MESSAGES:
       _addMessages(action.rawMessages);
       ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);
       _markAllInThreadRead(ThreadStore.getCurrentID());
-      MessageStore.emitChange();
+      MessageStore.emitChange({
+        messages: MessageStore.getAllForCurrentThread(),
+      });
       break;
 
     default:

@@ -22,8 +22,8 @@ var CHANGE_EVENT = 'change';
 
 var UnreadThreadStore = assign({}, EventEmitter.prototype, {
 
-  emitChange: function() {
-    this.emit(CHANGE_EVENT);
+  emitChange: function(data) {
+    this.emit(CHANGE_EVENT, data);
   },
 
   /**
@@ -62,11 +62,15 @@ UnreadThreadStore.dispatchToken = ChatAppDispatcher.register(function(action) {
   switch (action.type) {
 
     case ActionTypes.CLICK_THREAD:
-      UnreadThreadStore.emitChange();
+      UnreadThreadStore.emitChange({
+        unreadCount: UnreadThreadStore.getCount()
+      });
       break;
 
     case ActionTypes.RECEIVE_RAW_MESSAGES:
-      UnreadThreadStore.emitChange();
+      UnreadThreadStore.emitChange({
+        unreadCount: UnreadThreadStore.getCount()
+      });
       break;
 
     default:
