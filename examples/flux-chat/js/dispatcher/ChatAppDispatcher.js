@@ -15,5 +15,6 @@ var Rx = require('rx-lite');
 
 var dispatcher = new Dispatcher();
 dispatcher.createMessage = new Rx.Subject();
+dispatcher.clickThread = new Rx.Subject();
 
 module.exports = dispatcher;

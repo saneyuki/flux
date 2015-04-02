@@ -104,19 +104,18 @@ ChatAppDispatcher.createMessage.subscribe(function(action){
   });
 });
 
+ChatAppDispatcher.clickThread.subscribe(function (action) {
+  //ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);
+  _markAllInThreadRead(ThreadStore.getCurrentID());
+  MessageStore.emitChange({
+    messages: MessageStore.getAllForCurrentThread(),
+  });
+});
+
 
 MessageStore.dispatchToken = ChatAppDispatcher.register(function(action) {
 
   switch(action.type) {
-
-    case ActionTypes.CLICK_THREAD:
-      ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);
-      _markAllInThreadRead(ThreadStore.getCurrentID());
-      MessageStore.emitChange({
-        messages: MessageStore.getAllForCurrentThread(),
-      });
-      break;
-
     case ActionTypes.RECEIVE_RAW_MESSAGES:
       _addMessages(action.rawMessages);
       ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);

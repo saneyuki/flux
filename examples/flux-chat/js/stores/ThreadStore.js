@@ -102,20 +102,19 @@ var ThreadStore = assign({}, EventEmitter.prototype, {
 
 });
 
+ChatAppDispatcher.clickThread.subscribe(function (action) {
+  _currentID = action.threadID;
+  _threads[_currentID].lastMessage.isRead = true;
+  ThreadStore.emitChange({
+    threads: ThreadStore.getAllChrono(),
+    currentThreadID: ThreadStore.getCurrentID(),
+    thread: ThreadStore.getCurrent(),
+  });
+});
+
 ThreadStore.dispatchToken = ChatAppDispatcher.register(function(action) {
 
   switch(action.type) {
-
-    case ActionTypes.CLICK_THREAD:
-      _currentID = action.threadID;
-      _threads[_currentID].lastMessage.isRead = true;
-      ThreadStore.emitChange({
-        threads: ThreadStore.getAllChrono(),
-        currentThreadID: ThreadStore.getCurrentID(),
-        thread: ThreadStore.getCurrent(),
-      });
-      break;
-
     case ActionTypes.RECEIVE_RAW_MESSAGES:
       ThreadStore.init(action.rawMessages);
       ThreadStore.emitChange({

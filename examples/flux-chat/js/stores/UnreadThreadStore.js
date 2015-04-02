@@ -53,6 +53,12 @@ var UnreadThreadStore = assign({}, EventEmitter.prototype, {
 
 });
 
+ChatAppDispatcher.clickThread.subscribe(function (action) {
+  UnreadThreadStore.emitChange({
+    unreadCount: UnreadThreadStore.getCount()
+  });
+});
+
 UnreadThreadStore.dispatchToken = ChatAppDispatcher.register(function(action) {
   ChatAppDispatcher.waitFor([
     ThreadStore.dispatchToken,
@@ -60,13 +66,6 @@ UnreadThreadStore.dispatchToken = ChatAppDispatcher.register(function(action) {
   ]);
 
   switch (action.type) {
-
-    case ActionTypes.CLICK_THREAD:
-      UnreadThreadStore.emitChange({
-        unreadCount: UnreadThreadStore.getCount()
-      });
-      break;
-
     case ActionTypes.RECEIVE_RAW_MESSAGES:
       UnreadThreadStore.emitChange({
         unreadCount: UnreadThreadStore.getCount()
