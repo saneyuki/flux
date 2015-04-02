@@ -112,22 +112,13 @@ ChatAppDispatcher.clickThread.subscribe(function (action) {
   });
 });
 
-ThreadStore.dispatchToken = ChatAppDispatcher.register(function(action) {
-
-  switch(action.type) {
-    case ActionTypes.RECEIVE_RAW_MESSAGES:
-      ThreadStore.init(action.rawMessages);
-      ThreadStore.emitChange({
-        threads: ThreadStore.getAllChrono(),
-        currentThreadID: ThreadStore.getCurrentID(),
-        thread: ThreadStore.getCurrent(),
-      });
-      break;
-
-    default:
-      // do nothing
-  }
-
+ChatAppDispatcher.receiveRawMessages.subscribe(function (action) {
+  ThreadStore.init(action.rawMessages);
+  ThreadStore.emitChange({
+    threads: ThreadStore.getAllChrono(),
+    currentThreadID: ThreadStore.getCurrentID(),
+    thread: ThreadStore.getCurrent(),
+  });
 });
 
 module.exports = ThreadStore;

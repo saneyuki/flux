@@ -18,8 +18,7 @@ var ActionTypes = ChatConstants.ActionTypes;
 module.exports = {
 
   receiveAll: function(rawMessages) {
-    ChatAppDispatcher.dispatch({
-      type: ActionTypes.RECEIVE_RAW_MESSAGES,
+    ChatAppDispatcher.receiveRawMessages.onNext({
       rawMessages: rawMessages
     });
   },

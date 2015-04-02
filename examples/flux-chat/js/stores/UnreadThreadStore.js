@@ -59,22 +59,15 @@ ChatAppDispatcher.clickThread.subscribe(function (action) {
   });
 });
 
-UnreadThreadStore.dispatchToken = ChatAppDispatcher.register(function(action) {
-  ChatAppDispatcher.waitFor([
-    ThreadStore.dispatchToken,
-    MessageStore.dispatchToken
-  ]);
+ChatAppDispatcher.receiveRawMessages.subscribe(function (action) {
+  //ChatAppDispatcher.waitFor([
+  //  ThreadStore.dispatchToken,
+  //  MessageStore.dispatchToken
+  //]);
 
-  switch (action.type) {
-    case ActionTypes.RECEIVE_RAW_MESSAGES:
-      UnreadThreadStore.emitChange({
-        unreadCount: UnreadThreadStore.getCount()
-      });
-      break;
-
-    default:
-      // do nothing
-  }
+  UnreadThreadStore.emitChange({
+    unreadCount: UnreadThreadStore.getCount()
+  });
 });
 
 module.exports = UnreadThreadStore;

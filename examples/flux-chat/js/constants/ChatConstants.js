@@ -16,7 +16,6 @@ module.exports = {
 
   ActionTypes: keyMirror({
     RECEIVE_RAW_CREATED_MESSAGE: null,
-    RECEIVE_RAW_MESSAGES: null
   })
 
 };
