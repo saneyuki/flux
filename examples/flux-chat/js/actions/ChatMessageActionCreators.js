@@ -20,8 +20,7 @@ var ActionTypes = ChatConstants.ActionTypes;
 module.exports = {
 
   createMessage: function(text, currentThreadID) {
-    ChatAppDispatcher.dispatch({
-      type: ActionTypes.CREATE_MESSAGE,
+    ChatAppDispatcher.createMessage.onNext({
       text: text,
       currentThreadID: currentThreadID
     });

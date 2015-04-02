@@ -11,5 +11,9 @@
  */
 
 var Dispatcher = require('flux').Dispatcher;
+var Rx = require('rx-lite');
 
-module.exports = new Dispatcher();
+var dispatcher = new Dispatcher();
+dispatcher.createMessage = new Rx.Subject();
+
+module.exports = dispatcher;

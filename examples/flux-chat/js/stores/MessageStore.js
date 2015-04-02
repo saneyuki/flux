@@ -93,6 +93,18 @@ var MessageStore = assign({}, EventEmitter.prototype, {
 
 });
 
+ChatAppDispatcher.createMessage.subscribe(function(action){
+  var message = ChatMessageUtils.getCreatedMessageData(
+      action.text,
+      action.currentThreadID
+      );
+  _messages[message.id] = message;
+  MessageStore.emitChange({
+    messages: MessageStore.getAllForCurrentThread(),
+  });
+});
+
+
 MessageStore.dispatchToken = ChatAppDispatcher.register(function(action) {
 
   switch(action.type) {
@@ -100,17 +112,6 @@ MessageStore.dispatchToken = ChatAppDispatcher.register(function(action) {
     case ActionTypes.CLICK_THREAD:
       ChatAppDispatcher.waitFor([ThreadStore.dispatchToken]);
       _markAllInThreadRead(ThreadStore.getCurrentID());
-      MessageStore.emitChange({
-        messages: MessageStore.getAllForCurrentThread(),
-      });
-      break;
-
-    case ActionTypes.CREATE_MESSAGE:
-      var message = ChatMessageUtils.getCreatedMessageData(
-        action.text,
-        action.currentThreadID
-      );
-      _messages[message.id] = message;
       MessageStore.emitChange({
         messages: MessageStore.getAllForCurrentThread(),
       });
