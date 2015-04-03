@@ -11,19 +11,13 @@
  */
 
 var ChatAppDispatcher = require('../dispatcher/ChatAppDispatcher');
-var ChatConstants = require('../constants/ChatConstants');
 var ChatMessageUtils = require('../utils/ChatMessageUtils');
-var EventEmitter = require('events').EventEmitter;
-var assign = require('object-assign');
 var Rx = require('rx-lite');
-
-var ActionTypes = ChatConstants.ActionTypes;
-var CHANGE_EVENT = 'change';
 
 var _currentID = null;
 var _threads = {};
 
-var ThreadStore = assign({}, EventEmitter.prototype, {
+var ThreadStore = {
 
   init: function(rawMessages) {
     rawMessages.forEach(function(message) {
@@ -45,24 +39,6 @@ var ThreadStore = assign({}, EventEmitter.prototype, {
     }
 
     _threads[_currentID].lastMessage.isRead = true;
-  },
-
-  emitChange: function(data) {
-    this.emit(CHANGE_EVENT, data);
-  },
-
-  /**
-   * @param {function} callback
-   */
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  /**
-   * @param {function} callback
-   */
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
   },
 
   /**
@@ -109,7 +85,22 @@ var ThreadStore = assign({}, EventEmitter.prototype, {
     return recieveMessageStream;
   },
 
-});
+  subscribe: function (callback) {
+    return Rx.Observable.merge([
+      clickThreadStream,
+      recieveMessageStream
+    ])
+    .map(function(){
+      return {
+        threads: ThreadStore.getAllChrono(),
+        currentThreadID: ThreadStore.getCurrentID(),
+        thread: ThreadStore.getCurrent(),
+      };
+    })
+    .subscribe(callback);
+  },
+
+};
 
 var clickThreadStream = ChatAppDispatcher.clickThread.map(function (action) {
   _currentID = action.threadID;
@@ -126,12 +117,6 @@ Rx.Observable.merge([
     clickThreadStream,
     recieveMessageStream
 ])
-.subscribe(function(action){
-  ThreadStore.emitChange({
-    threads: ThreadStore.getAllChrono(),
-    currentThreadID: ThreadStore.getCurrentID(),
-    thread: ThreadStore.getCurrent(),
-  });
-});
+.subscribe(function(action){});
 
 module.exports = ThreadStore;

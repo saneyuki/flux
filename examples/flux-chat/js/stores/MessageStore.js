@@ -11,15 +11,9 @@
  */
 
 var ChatAppDispatcher = require('../dispatcher/ChatAppDispatcher');
-var ChatConstants = require('../constants/ChatConstants');
 var ChatMessageUtils = require('../utils/ChatMessageUtils');
-var EventEmitter = require('events').EventEmitter;
 var ThreadStore = require('../stores/ThreadStore');
-var assign = require('object-assign');
 var Rx = require('rx-lite');
-
-var ActionTypes = ChatConstants.ActionTypes;
-var CHANGE_EVENT = 'change';
 
 var _messages = {};
 
@@ -42,22 +36,7 @@ function _markAllInThreadRead(threadID) {
   }
 }
 
-var MessageStore = assign({}, EventEmitter.prototype, {
-
-  emitChange: function(data) {
-    this.emit(CHANGE_EVENT, data);
-  },
-
-  /**
-   * @param {function} callback
-   */
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
-  },
+var MessageStore = {
 
   get: function(id) {
     return _messages[id];
@@ -96,7 +75,19 @@ var MessageStore = assign({}, EventEmitter.prototype, {
     return recieveMessageStream;
   },
 
-});
+  subscribe: function (callback) {
+    return Rx.Observable.merge([
+      createMessageStream,
+      clickThreadStream,
+      recieveMessageStream
+    ]).map(function(action){
+      return {
+        messages: MessageStore.getAllForCurrentThread(),
+      };
+    }).subscribe(callback);
+  },
+
+};
 
 var createMessageStream = ChatAppDispatcher.createMessage.map(function(action){
   var message = ChatMessageUtils.getCreatedMessageData(
@@ -130,10 +121,6 @@ Rx.Observable.merge([
   createMessageStream,
   clickThreadStream,
   recieveMessageStream
-]).subscribe(function(action){
-  MessageStore.emitChange({
-    messages: MessageStore.getAllForCurrentThread(),
-  });
-});
+]).subscribe(function(action){});
 
 module.exports = MessageStore;
