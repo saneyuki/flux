@@ -30,27 +30,23 @@ var UnreadThreadStore = {
 
   subscribe: function (callback) {
     return Rx.Observable.merge(
-          clickThreadStream,
+          ChatAppDispatcher.clickThread,
           recieveMessageStream
-        ).subscribe(callback);
+        )
+        .map(function (action) {
+          return {
+            unreadCount: UnreadThreadStore.getCount()
+          };
+        })
+        .subscribe(callback);
   },
 
 };
-
-var clickThreadStream = ChatAppDispatcher.clickThread.map(function (action) {
-  return {
-    unreadCount: UnreadThreadStore.getCount()
-  };
-});
 
 var recieveMessageStream = Rx.Observable.zipArray(
   ThreadStore.getRecieveMessageStream(),
   MessageStore.getRecieveMessageStream(),
   ChatAppDispatcher.receiveRawMessages
-).map(function (action) {
-  return {
-    unreadCount: UnreadThreadStore.getCount()
-  };
-});
+);
 
 module.exports = UnreadThreadStore;
