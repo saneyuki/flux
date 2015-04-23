@@ -113,10 +113,4 @@ var recieveMessageStream = ChatAppDispatcher.receiveRawMessages.map(function (ac
   return action;
 });
 
-Rx.Observable.merge([
-    clickThreadStream,
-    recieveMessageStream
-])
-.subscribe(function(action){});
-
 module.exports = ThreadStore;
