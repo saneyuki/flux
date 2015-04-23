@@ -24,8 +24,7 @@ module.exports = {
   },
 
   receiveCreatedMessage: function(createdMessage) {
-    ChatAppDispatcher.dispatch({
-      type: ActionTypes.RECEIVE_RAW_CREATED_MESSAGE,
+    ChatAppDispatcher.receiveRawCreatedMessage.onNext({
       rawMessage: createdMessage
     });
   }

@@ -17,5 +17,6 @@ var dispatcher = new Dispatcher();
 dispatcher.createMessage = new Rx.Subject();
 dispatcher.clickThread = new Rx.Subject();
 dispatcher.receiveRawMessages = new Rx.Subject();
+dispatcher.receiveRawCreatedMessage = new Rx.Subject();
 
 module.exports = dispatcher;
